@@ -27,9 +27,9 @@
 
 #include "qcommandline.h"
 
-const QCommandLineConfigEntry QCommandLine::helpEntry = { QCommandLine::Switch, QLatin1Char('h'), QLatin1String("help"), tr("Display this help and exit"), QCommandLine::Optional };
+const QCommandLineConfigEntry QCommandLine::helpEntry = { QCommandLine::Switch, QLatin1Char('h'), QLatin1String("help"), QT_TR_NOOP("Display this help and exit"), QCommandLine::Optional };
 
-const QCommandLineConfigEntry QCommandLine::versionEntry = { QCommandLine::Switch, QLatin1Char('V'), QLatin1String("version"), tr("Display version and exit"), QCommandLine::Optional };
+const QCommandLineConfigEntry QCommandLine::versionEntry = { QCommandLine::Switch, QLatin1Char('V'), QLatin1String("version"), QT_TR_NOOP("Display version and exit"), QCommandLine::Optional };
 
 QCommandLine::QCommandLine(QObject * parent)
   : QObject(parent), d(new QCommandLinePrivate)
@@ -437,7 +437,7 @@ QCommandLine::help(bool logo)
     h += QFileInfo(d->args[0]).baseName();
   else
     h += QCoreApplication::applicationName();
-  h.append(QLatin1String(" [switchs] [options]"));
+  h.append(QLatin1String(" [switches] [options]"));
   /* Arguments, short */
   foreach (QCommandLineConfigEntry entry, d->config) {
     if (entry.type == QCommandLine::Option) {
@@ -532,4 +532,3 @@ QCommandLine::showVersion(bool quit, int returnCode)
     exit(returnCode);
   }
 }
-

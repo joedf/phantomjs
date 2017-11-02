@@ -28,7 +28,7 @@ In the commit message:
 
 **Task management**. Once the feature idea is agreed upon and translated into concrete actions and tasks, please use the [issue tracker](https://github.com/ariya/phantomjs/issues) to create an issue for each individual task. Further technical discussion about the task and the implementation details should be carried out in the issue tracker.
 
-**Extending with new API**. Whenever you want to introduce a new API, please send an email to the mailing list along with the link to the issue. Consider good API name for the object or function, read the [API Design Principle](http://developer.qt.nokia.com/wiki/API_Design_Principles) article. It may require few iterations to agree on the final API and hence it is important to engage all interested parties as early as possible.
+**Extending with new API**. Whenever you want to introduce a new API, please send an email to the mailing list along with the link to the issue. Consider good API name for the object or function, read the [API Design Principle](http://wiki.qt.io/API_Design_Principles) article. It may require few iterations to agree on the final API and hence it is important to engage all interested parties as early as possible.
 
 ## Get Ready
 
@@ -67,8 +67,8 @@ Refer to your favorite Git tutorial/book for further detailed help.
 
 Some good practices for the feature branch:
 
-* Give it a meaningful name instead of, e.g. `prevent-zero-divide` instead of just `fix`
-* Make *granular* and *atomic* commits, e.g. do not mix a typo fix with some major refactoring
+* Give it a meaningful name, e.g. `prevent-zero-divide`, instead of just `fix`.
+* Make *granular* and *atomic* commits, e.g. do not mix a typo fix with some major refactoring.
 * Keep one branch for one specific issue. If you need to work on other unrelated issues, create another branch.
 
 ## Review and Merge
@@ -85,4 +85,3 @@ Here is a check list for the review:
 * There is a reasonable amount of comment
 * The license header is intact
 * All examples are still working
-

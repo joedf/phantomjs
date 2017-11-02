@@ -36,11 +36,10 @@
 #include <QDebug>
 #include <QDateTime>
 #include <QDir>
-#include <QtWebKitWidgets/QWebFrame>
+#include <QWebFrame>
 
-static QString findScript(const QString& jsFilePath, const QString &libraryPath)
+static QString findScript(const QString& jsFilePath, const QString& libraryPath)
 {
-    QString filePath = jsFilePath;
     if (!jsFilePath.isEmpty()) {
         QFile jsFile;
 
@@ -66,7 +65,7 @@ static QString jsFromScriptFile(const QString& scriptPath, const QString& script
         // Remove CLI script heading
         if (scriptBody.startsWith("#!")) {
             int len = scriptBody.indexOf(QRegExp("[\r\n]"));
-            if (len == -1) len = scriptBody.length();
+            if (len == -1) { len = scriptBody.length(); }
             scriptBody.remove(0, len);
         }
 
@@ -84,47 +83,50 @@ static QString jsFromScriptFile(const QString& scriptPath, const QString& script
     }
 }
 
-namespace Utils {
+namespace Utils
+{
 
 bool printDebugMessages = false;
 
-void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+void messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
     Q_UNUSED(context);
-    QDateTime now = QDateTime::currentDateTime();
+    QString now = QDateTime::currentDateTime().toString(Qt::ISODate);
 
     switch (type) {
+    case QtInfoMsg:
+        fprintf(stderr, "%s [INFO] %s\n", qPrintable(now), qPrintable(msg));
+        break;
     case QtDebugMsg:
         if (printDebugMessages) {
-            fprintf(stderr, "%s [DEBUG] %s\n", qPrintable(now.toString(Qt::ISODate)), qPrintable(msg));
+            fprintf(stderr, "%s [DEBUG] %s\n", qPrintable(now), qPrintable(msg));
         }
         break;
     case QtWarningMsg:
         if (printDebugMessages) {
-            fprintf(stderr, "%s [WARNING] %s\n", qPrintable(now.toString(Qt::ISODate)), qPrintable(msg));
+            fprintf(stderr, "%s [WARNING] %s\n", qPrintable(now), qPrintable(msg));
         }
         break;
     case QtCriticalMsg:
-        fprintf(stderr, "%s [CRITICAL] %s\n", qPrintable(now.toString(Qt::ISODate)), qPrintable(msg));
+        fprintf(stderr, "%s [CRITICAL] %s\n", qPrintable(now), qPrintable(msg));
         break;
     case QtFatalMsg:
-        fprintf(stderr, "%s [FATAL] %s\n", qPrintable(now.toString(Qt::ISODate)), qPrintable(msg));
+        fprintf(stderr, "%s [FATAL] %s\n", qPrintable(now), qPrintable(msg));
         abort();
     }
 }
 
-bool injectJsInFrame(const QString &jsFilePath, const QString &libraryPath, QWebFrame *targetFrame, const bool startingScript)
+bool injectJsInFrame(const QString& jsFilePath, const QString& libraryPath, QWebFrame* targetFrame, const bool startingScript)
 {
     return injectJsInFrame(jsFilePath, QString(), Encoding::UTF8, libraryPath, targetFrame, startingScript);
 }
 
-bool injectJsInFrame(const QString &jsFilePath, const QString &jsFileLanguage, const Encoding &jsFileEnc, const QString &libraryPath, QWebFrame *targetFrame, const bool startingScript)
+bool injectJsInFrame(const QString& jsFilePath, const QString& jsFileLanguage, const Encoding& jsFileEnc, const QString& libraryPath, QWebFrame* targetFrame, const bool startingScript)
 {
     // Don't do anything if an empty string is passed
     QString scriptPath = findScript(jsFilePath, libraryPath);
     QString scriptBody = jsFromScriptFile(scriptPath, jsFileLanguage, jsFileEnc);
-    if (scriptBody.isEmpty())
-    {
+    if (scriptBody.isEmpty()) {
         if (startingScript) {
             Terminal::instance()->cerr(QString("Can't open '%1'").arg(jsFilePath));
         } else {
@@ -133,7 +135,7 @@ bool injectJsInFrame(const QString &jsFilePath, const QString &jsFileLanguage, c
         return false;
     }
     // Execute JS code in the context of the document
-    targetFrame->evaluateJavaScript(scriptBody, jsFilePath);
+    targetFrame->evaluateJavaScript(scriptBody);
     return true;
 }
 
@@ -142,23 +144,22 @@ bool loadJSForDebug(const QString& jsFilePath, const QString& libraryPath, QWebF
     return loadJSForDebug(jsFilePath, QString(), Encoding::UTF8, libraryPath, targetFrame, autorun);
 }
 
-bool loadJSForDebug(const QString& jsFilePath, const QString &jsFileLanguage, const Encoding& jsFileEnc, const QString& libraryPath, QWebFrame* targetFrame, const bool autorun)
+bool loadJSForDebug(const QString& jsFilePath, const QString& jsFileLanguage, const Encoding& jsFileEnc, const QString& libraryPath, QWebFrame* targetFrame, const bool autorun)
 {
     QString scriptPath = findScript(jsFilePath, libraryPath);
     QString scriptBody = jsFromScriptFile(scriptPath, jsFileLanguage, jsFileEnc);
 
-    QString remoteDebuggerHarnessSrc =  readResourceFileUtf8(":/remote_debugger_harness.html");
-    remoteDebuggerHarnessSrc = remoteDebuggerHarnessSrc.arg(scriptBody);
-    targetFrame->setHtml(remoteDebuggerHarnessSrc);
+    scriptBody = QString("function __run() {\n%1\n}").arg(scriptBody);
+    targetFrame->evaluateJavaScript(scriptBody);
 
     if (autorun) {
-        targetFrame->evaluateJavaScript("__run()", QString());
+        targetFrame->evaluateJavaScript("__run()");
     }
 
     return true;
 }
 
-QString readResourceFileUtf8(const QString &resourceFilePath)
+QString readResourceFileUtf8(const QString& resourceFilePath)
 {
     QFile f(resourceFilePath);
     f.open(QFile::ReadOnly); //< It's OK to assume this succeed. If it doesn't, we have a bigger problem.
